@@ -1,0 +1,129 @@
+题目描述:
+给定一个字符串 (s) 和一个字符模式 (p)。实现支持 '.' 和 '*' 的正则表达式匹配。
+
+'.' 匹配任意单个字符。
+'*' 匹配零个或多个前面的元素。
+匹配应该覆盖整个字符串 (s) ，而不是部分字符串。
+
+说明:
+
+s 可能为空，且只包含从 a-z 的小写字母。
+p 可能为空，且只包含从 a-z 的小写字母，以及字符 . 和 *。
+示例 1:
+
+输入:
+s = "aa"
+p = "a"
+输出: false
+解释: "a" 无法匹配 "aa" 整个字符串。
+示例 2:
+
+输入:
+s = "aa"
+p = "a*"
+输出: true
+解释: '*' 代表可匹配零个或多个前面的元素, 即可以匹配 'a' 。因此, 重复 'a' 一次, 字符串可变为 "aa"。
+示例 3:
+
+输入:
+s = "ab"
+p = ".*"
+输出: true
+解释: ".*" 表示可匹配零个或多个('*')任意字符('.')。
+示例 4:
+
+输入:
+s = "aab"
+p = "c*a*b"
+输出: true
+解释: 'c' 可以不被重复, 'a' 可以被重复一次。因此可以匹配字符串 "aab"。
+示例 5:
+
+输入:
+s = "mississippi"
+p = "mis*is*p*."
+输出: false
+
+
+思考：
+  刚开始的思考是 正则字符p的可能性只用三种，我可以每次根据三个不同情况进行处理解决。并且决定正向进行匹配，可能想着正反都可以。等到随后写的时候崩溃ing。
+就题目中给的几个例子很快就都可以跑通，但是 (aaa,a*a),(aaa,aa*a) 等等，导致我不断在原先思路里加特殊处理，加判断等等，等加了一天后，意识到，我的思路是错的。
+放弃了继续没完没了的加判断的。转而去向大神们寻求帮助。
+https://blog.csdn.net/hk2291976/article/details/51165010#commentsedit  。在这篇博客里，对这道题将的很透彻。递归和动态规划。
+除了学会了动态规划，我也意识到，我之前思路的问题在哪里：方向。  我选择了从正则字符串的前到后的顺序。 而博客中选择的是从后往前。  
+具体原因呢：由于*号的存在，从前往后会一直判断后面一个是否是*,特殊逻辑过多，而从后往前的化，碰到*在按照*的方式处理，而且知道*的前面肯定存在字符。
+这道题对我而言  持续了整整一周。  也确实学到了写东西
+
+代码：
+class Solution {
+
+    /**
+     * @param String $s
+     * @param String $p
+     * @return Boolean
+     */
+    
+    /*
+    //递归
+    const FRONT = -1;
+    
+    function isMatch($s, $p) {
+        return self::myMatch($s,strlen($s)-1,$p,strlen($p)-1);
+    }
+    
+    function myMatch($s,$smax,$p,$pmax){
+        if($pmax == Solution::FRONT){
+            if($smax == Solution::FRONT)
+                return true;
+            return false;
+        }
+        
+        if($p[$pmax] == '*'){
+            if( $smax > Solution::FRONT && ( $p[$pmax-1] == '.' || $p[$pmax-1] == $s[$smax]) && self::myMatch($s,$smax-1,$p,$pmax) ){
+                return true;
+            }
+            return self::myMatch($s,$smax,$p,$pmax-2);
+        }
+        
+        if($p[$pmax] == '.' || $p[$pmax] == $s[$smax]){
+            return self::myMatch($s,$smax-1,$p,$pmax-1);
+        }
+        return false;
+    }
+    */
+    
+
+    function isMatch($s, $p) {
+        //动态规划
+        $m = strlen($s);
+        $n = strlen($p);
+        $dp = [$m+1][$n+1];
+
+        //初始化
+        $dp[0][0]=true;
+        for($i = 1;$i<=$m; $i++){
+            $dp[$i][0] = false;
+        }
+
+        for($j = 1; $j <= $n; $j++){
+            $dp[0][$j] = $j>1 && $p[$j-1] == '*' && $dp[0][$j-2];
+        }
+
+        for($i = 1 ; $i<=$m;$i++){
+
+            for($j=1; $j<=$n; $j++){
+
+                if($p[$j-1] != '*'){
+                    $dp[$i][$j] = ($p[$j-1] == $s[$i-1] || $p[$j-1] == '.') && $dp[$i-1][$j-1];
+                }else{
+                    $dp[$i][$j] = $dp[$i][$j-2] || ($p[$j-2] == $s[$i-1] || $p[$j-2] == '.') && ($dp[$i-1][$j] || $dp[$i][$j-1]); 
+                }
+            }
+        }
+        //var_dump($dp);
+        return $dp[$m][$n];
+    }
+}
+
+
+
