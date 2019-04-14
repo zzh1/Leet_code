@@ -1,0 +1,102 @@
+题目：
+    编写一个函数来查找字符串数组中的最长公共前缀。
+
+    如果不存在公共前缀，返回空字符串 ""。
+
+    示例 1:
+
+    输入: ["flower","flow","flight"]
+    输出: "fl"
+    示例 2:
+
+    输入: ["dog","racecar","car"]
+    输出: ""
+    解释: 输入不存在公共前缀。
+    说明:
+
+    所有输入只包含小写字母 a-z 。
+    
+===================================================================================================================
+思考: 
+    以第一个字符串的字符为准，进行比较，循环比较每一个字符中的某位置的字符，直到出现不等，直接跳出循环 返回。
+    因为当出现不等的时候两层循环都要跳出去，所以二层循环的时候需要一个flag进行标记
+    
+代码(我最初的思路的写法)：
+        $strs_len = count($strs);
+        $samestr = "";
+        for($i=0;$i<strlen($strs[0]);$i++){
+            $flag = true;
+            for($j = 1;$j < $strs_len;$j++){
+                if($i >= strlen($strs[$j]) || $strs[$j][$i] != $strs[0][$i]){
+                    $flag = false; 
+                    break;
+                }
+            }
+            if($flag){
+                $samestr .= $strs[0][$i];
+            }else{
+                return $samestr;
+            }
+        }
+        
+        return $samestr;
+
+本来想着很简单，应该不能怎么优化啦，一看评论，简直吓一跳。  使用max()  和 min() 将字符串数组中最大和最小的两个字符串找出来，
+只需要找最大最小两个字符串的最长公共前缀，就是整个数组的最长公共前缀。  服了。
+
+代码(完整的)：
+class Solution {
+
+    /**
+     * @param String[] $strs
+     * @return String
+     */
+    function longestCommonPrefix($strs) {
+        
+        /*
+        $strs_len = count($strs);
+        
+        $samestr = "";
+        
+        for($i=0;$i<strlen($strs[0]);$i++){
+            $flag = true;
+            for($j = 1;$j < $strs_len;$j++){
+                if($i >= strlen($strs[$j]) || $strs[$j][$i] != $strs[0][$i]){
+                    $flag = false; 
+                    break;
+                }
+            }
+            if($flag){
+                $samestr .= $strs[0][$i];
+            }else{
+                return $samestr;
+            }
+        }
+        
+        return $samestr;
+        */
+        
+        //只比较最大最小解法
+        if(count($strs)<1) return '';
+        $s1 = min($strs);
+        $s2 = max($strs);
+        
+        $samestr = '';
+        for($i=0;$i<strlen($s1);$i++){
+            if($s1[$i]==$s2[$i]){
+                $samestr .= $s1[$i];
+            }else{
+                break;
+            }
+        }
+        return $samestr;
+        
+    }
+}
+
+
+
+
+
+
+
