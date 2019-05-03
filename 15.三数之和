@@ -12,7 +12,9 @@
 
 思考：
     比较常规的方法，三次循环，只不过在最里面一层匹配上后，直接break本层，无需继续循环。
-    
+
+优化1: 仿照第16题，排序后，使用双指针思想，但是仍然超时
+
     
 代码：
 class Solution {
@@ -22,6 +24,8 @@ class Solution {
      * @return Integer[][]
      */
     function threeSum($nums) {
+        /*
+        //暴力法
         $len = count($nums);
         $result = [];
         $check = [];
@@ -37,6 +41,39 @@ class Solution {
                 if(count($result)>$t) continue;
             }
             $t = count($result);
+        }
+        
+        return $result;
+        */
+        
+        //双指针思想
+        $len = count($nums);
+        if($len < 3) return [];
+        
+        sort($nums);
+        
+        $result = [];
+        $check = [];
+        
+        for($i=0,$t=count($result);$i<$len-2;$i++){
+            $l = $i+1;
+            $r = $len - 1;
+            while($l < $r){
+                $sum = $nums[$i]+$nums[$l]+$nums[$r];
+                if($sum == 0 && self::checkRepeat($nums[$i],$nums[$l],$nums[$r],$result)){
+                        $result[] = [$nums[$i],$nums[$l],$nums[$r]];
+                }
+                
+                if($sum > 0){
+                    $r--;
+                }else if($sum < 0){
+                    $l++ ;
+                }else{
+                    //等于0
+                    $r--;
+                    $l++;
+                }
+            }
         }
         
         return $result;
