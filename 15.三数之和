@@ -1,0 +1,71 @@
+题目描述：
+给定一个包含 n 个整数的数组 nums，判断 nums 中是否存在三个元素 a，b，c ，使得 a + b + c = 0 ？找出所有满足条件且不重复的三元组。
+注意：答案中不可以包含重复的三元组。
+
+例如, 给定数组 nums = [-1, 0, 1, 2, -1, -4]，
+
+满足要求的三元组集合为：
+[
+  [-1, 0, 1],
+  [-1, -1, 2]
+]
+
+思考：
+    比较常规的方法，三次循环，只不过在最里面一层匹配上后，直接break本层，无需继续循环。
+    
+    
+代码：
+class Solution {
+
+    /**
+     * @param Integer[] $nums
+     * @return Integer[][]
+     */
+    function threeSum($nums) {
+        $len = count($nums);
+        $result = [];
+        $check = [];
+        
+        for($i=0,$t=count($result);$i<$len-2;$i++){
+            for($j=$i+1;$j<$len-1;$j++){
+                for($z=$j+1;$z<$len;$z++){
+                    if($nums[$i]+$nums[$j]+$nums[$z] == 0 && self::checkRepeat($nums[$i],$nums[$j],$nums[$z],$result)){
+                        $result[] = [$nums[$i],$nums[$j],$nums[$z]];
+                        break;
+                    }
+                }
+                if(count($result)>$t) continue;
+            }
+            $t = count($result);
+        }
+        
+        return $result;
+    }
+
+    
+    function checkRepeat($a,$b,$c,$check_arr){
+        
+        for($i=0;$i<count($check_arr);$i++){
+            if($a == $b && $b ==$c){
+                //特殊处理掉 0 0 0 的情况
+                if(in_array([0,0,0],$check_arr)){
+                    return false;
+                }else{
+                    return true;
+                }
+            }
+            if(in_array($a,$check_arr[$i]) && in_array($b,$check_arr[$i]) && in_array($c,$check_arr[$i])){
+                return false;
+            }
+        }
+        
+        return true;
+    }
+}
+
+
+
+
+
+
+
