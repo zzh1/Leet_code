@@ -1,0 +1,75 @@
+原题链接：
+题目描述：
+  给定一个包含 n 个整数的数组 nums 和一个目标值 target，判断 nums 中是否存在四个元素 a，b，c 和 d ，使得 a + b + c + d 的值与 target 相等？找出所有满足条件且不重复的四元组。
+
+注意：
+
+答案中不可以包含重复的四元组。
+
+示例：
+    给定数组 nums = [1, 0, -1, 0, -2, 2]，和 target = 0。
+
+    满足要求的四元组集合为：
+    [
+      [-1,  0, 0, 1],
+      [-2, -1, 1, 2],
+      [-2,  0, 0, 2]
+    ]
+   
+思路： 三数之和再嵌套一层,注意外两层的去重方式相同。
+代码：
+class Solution {
+
+    /**
+     * @param Integer[] $nums
+     * @param Integer $target
+     * @return Integer[][]
+     */
+    function fourSum($nums, $target) {
+        //双指针思想
+        $len = count($nums);
+        if($len < 4) return [];
+        
+        sort($nums);
+        
+        $result = [];
+        $check = [];
+        
+        for($j = 0; $j<$len-3; $j++){
+            if($j>0 && $nums[$j] == $nums[$j-1]) continue; //跳过重复值
+            for($i=$j+1;$i<$len-2;$i++){
+                if($i == $j+1 || ($i>$j+1 && $nums[$i] != $nums[$i-1])){ //跳过可能重复的值  与上面的意思相同，两种都为同一种意思
+                    $l = $i+1;
+                    $r = $len - 1;
+                    while($l < $r){
+                        $sum = $nums[$j] + $nums[$i]+$nums[$l]+$nums[$r];
+                        if($sum == $target){
+                                $result[] = [$nums[$j],$nums[$i],$nums[$l],$nums[$r]];
+                        }
+
+                        if($sum > $target){
+                            while($l < $r && $nums[$r] == $nums[$r-1]) $r--;  //跳过重复值
+                            $r--;
+                        }else if($sum < $target){
+                            while($l < $r && $nums[$l] == $nums[$l+1]) $l++;  //跳过重复值
+                            $l++ ;
+                        }else{
+                            //等于0
+                            while($l < $r && $nums[$r] == $nums[$r-1]) $r--;  //跳过重复值
+                            while($l < $r && $nums[$l] == $nums[$l+1]) $l++;  //跳过重复值
+                            $r--;
+                            $l++;
+                        }
+                    }    
+                }
+            }
+            
+        }
+        
+        
+        return $result;
+    }
+}
+
+
+
