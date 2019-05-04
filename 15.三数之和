@@ -100,9 +100,57 @@ class Solution {
     }
 }
 
+//第三次尝试，在做四数之和的时候，发现我的去重方法局限太多，毫无扩展性，在看了评论后，优化了 在使用双指针方法时的去重方式。竟然顺了通过。
+      看来之前没有通过，超时很有可能是校验去重太久。
+      本次去重思想：因为已经排了序，所以 在进行指针移动时，跳多重复的即可。
+代码:
+class Solution {
 
+    /**
+     * @param Integer[] $nums
+     * @return Integer[][]
+     */
+    function threeSum($nums) {
+        
+        //双指针思想
+        $len = count($nums);
+        if($len < 3) return [];
+        
+        sort($nums);
+        
+        $result = [];
+        $check = [];
+        
+        for($i=0,$t=count($result);$i<$len-2;$i++){
+            if($i == 0 || ($i>0 && $nums[$i] != $nums[$i-1])){ //跳过可能重复的值
+                $l = $i+1;
+                $r = $len - 1;
+                while($l < $r){
+                    $sum = $nums[$i]+$nums[$l]+$nums[$r];
+                    if($sum == 0){
+                            $result[] = [$nums[$i],$nums[$l],$nums[$r]];
+                    }
 
-
-
-
+                    if($sum > 0){
+                        while($l < $r && $nums[$r] == $nums[$r-1]) $r--;  //跳过重复值
+                        $r--;
+                    }else if($sum < 0){
+                        while($l < $r && $nums[$l] == $nums[$l+1]) $l++;  //跳过重复值
+                        $l++ ;
+                    }else{
+                        //等于0
+                        while($l < $r && $nums[$r] == $nums[$r-1]) $r--;  //跳过重复值
+                        while($l < $r && $nums[$l] == $nums[$l+1]) $l++;  //跳过重复值
+                        $r--;
+                        $l++;
+                    }
+                }    
+            }
+            
+        }
+        
+        return $result;
+    }
+    
+}
 
