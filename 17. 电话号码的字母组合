@@ -1,0 +1,63 @@
+原题链接：https://leetcode-cn.com/problems/letter-combinations-of-a-phone-number/
+题目：
+给定一个仅包含数字 2-9 的字符串，返回所有它能表示的字母组合。
+
+给出数字到字母的映射如下（与电话按键相同）。注意 1 不对应任何字母。
+  图无法截出来，意会
+           "0"=>" ","1"=>"*","2"=>"abc","3"=>"def","4"=>"ghi","5"=>"jkl",
+             "6"=>"mno","7"=>"pqrs","8"=>"tuv","9"=>"wxyz"
+  示例:
+
+  输入："23"
+  输出：["ad", "ae", "af", "bd", "be", "bf", "cd", "ce", "cf"].
+  说明:
+  尽管上面的答案是按字典序排列的，但是你可以任意选择答案输出的顺序。
+
+思考：本向使用暴力法进行求解，但是暴力法也无从下手，因为循环次数不确定。
+     最后查看了评论后，因循环次数不固定 需要使用递归。 实际编写过程中，用到了静态变量，和 引用参数的传递
+     
+     复习了下引用：https://www.cnblogs.com/xiaochaohuashengmi/archive/2011/09/10/2173092.html  (非常全面的php引用小结)
+            https://segmentfault.com/a/1190000012437512    里面的案例 讲的好
+     静态变量和全局变量：https://www.cnblogs.com/kuangdaoyizhimei/p/3969516.html   静态变量，全局变量使用上的区别
+
+代码：
+class Solution {
+
+    //定义一个静态变量
+    public static $table = ["0"=>" ","1"=>"*","2"=>"abc","3"=>"def","4"=>"ghi","5"=>"jkl",
+             "6"=>"mno","7"=>"pqrs","8"=>"tuv","9"=>"wxyz"];
+    
+    /**
+     * @param String $digits
+     * @return String[]
+     */
+    function letterCombinations($digits) {
+        if($digits=="") return [];
+        $res = [];
+        self::func($res,"",$digits,0);
+        return self::$res;
+    }
+    
+    function func(&$res,$str,$digits,$k){  //注意：引用参数的传递 
+        if(strlen($str) == strlen($digits)){
+            $res[] = $str;
+            return;
+        }
+        
+        $tmp = self::$table[$digits[$k]];  //取出本数字代表的字符串
+        
+        for($i = 0;$i<strlen($tmp);$i++){
+            $str .= $tmp[$i];
+            self::func($res,$str,$digits,$k+1);
+            $str = substr($str,0,strlen($str)-1);
+        }
+        return;
+    }
+    
+}
+     
+
+
+
+
+
