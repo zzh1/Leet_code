@@ -1,0 +1,98 @@
+原题连接： https://leetcode-cn.com/problems/generate-parentheses/comments/
+
+题目描述
+给出 n 代表生成括号的对数，请你写出一个函数，使其能够生成所有可能的并且有效的括号组合。
+
+例如，给出 n = 3，生成结果为：
+
+[
+  "((()))",
+  "(()())",
+  "(())()",
+  "()(())",
+  "()()()"
+]
+
+
+思路：核心思想和第19题校验括号有效，有类似。
+    一个括号栈，一个左括号栈，一个右括号栈。
+    假设n=3   
+    num('(') = num( '((' )+num( '()' ) = num( '(((' ) + num( '(()' ) + num( '()(' ) 
+    = num( '(((' ) + num( '(()(' ) + num( '(())' ) + num( '()()' ) + num( '()((' ) = 5
+    
+    递归循环，递归终点：当左括号栈为空的时候，只有一种可能，将所有右括号，放入栈，消除左括号。
+    
+    由于本题需要将所有的情况输出来，所以循环时，需要增加一个str来表示当前的字符串。
+    
+    PS:本题一次提交通过，纪念一下
+
+代码：
+class Solution {
+
+    /**
+     * @param Integer $n
+     * @return String[]
+     */
+    function generateParenthesis($n) {
+        
+        $stack = [];
+        $stack_left = [];
+        $stack_right = [];
+        $str = '';
+        while($n>0){
+            array_push($stack_left,'(');
+            array_push($stack_right,')');
+            $n--;
+        }
+        
+        return self::possibilityNums($stack,$stack_left,$stack_right,$str);
+    }
+    
+    
+    
+    function possibilityNums($stack,$stack_left,$stack_right,$str){
+        //递归终点，当做括号全部用完，只剩一种情况
+        if(count($stack_left) == 0){
+            //将剩余右括号全部放入
+            while(array_pop($stack_right) != null){
+                $str .= ')';
+            }
+            return [$str];
+        }
+        
+        if(count($stack) == 0){
+            //如果括号栈里为空，现在只能放左括号
+            array_pop($stack_left);
+            array_push($stack,'(');
+            $str .= '(';    
+        
+            return self::possibilityNums($stack,$stack_left,$stack_right,$str);
+        }else{
+            //括号栈里不为空，证明里面有左括号，此时需要两种情况之和
+            
+            //此时需要两组stack组,空间消耗过多，此处有优化空间
+            $stack_temp = $stack;
+            $stack_left_temp = $stack_left;
+            $stack_right_temp = $stack_right;
+            $str_temp = $str;
+            
+            //将左括号放入，在括号栈里继续增加一个左括号
+            array_pop($stack_left_temp);
+            array_push($stack_temp,'(');
+            $str_temp .= '(';
+            
+            //放入右括号，相当于消除一个左括号
+            array_pop($stack_right);
+            array_pop($stack);
+            $str .= ')';
+            
+            return array_merge(self::possibilityNums($stack_temp,$stack_left_temp,$stack_right_temp,$str_temp),
+                        self::possibilityNums($stack,$stack_left,$stack_right,$str));   
+        }
+        
+    }
+    
+}
+
+
+
