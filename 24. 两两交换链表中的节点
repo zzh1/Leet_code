@@ -1,0 +1,57 @@
+原题链接：https://leetcode-cn.com/problems/swap-nodes-in-pairs/submissions/
+
+题目描述：
+  给定一个链表，两两交换其中相邻的节点，并返回交换后的链表。
+
+  你不能只是单纯的改变节点内部的值，而是需要实际的进行节点交换。
+
+
+
+  示例:
+
+  给定 1->2->3->4, 你应该返回 2->1->4->3.
+
+思路：
+  常规思路，进行替换，但是写的时候发现链表操作有点问题，此题不是单独操作某个节点，而是两个节点交换，需要  这两个节点的前驱 后置。
+  
+代码：
+  
+/**
+ * Definition for a singly-linked list.
+ * class ListNode {
+ *     public $val = 0;
+ *     public $next = null;
+ *     function __construct($val) { $this->val = $val; }
+ * }
+ */
+class Solution {
+
+    /**
+     * @param ListNode $head
+     * @return ListNode
+     */
+    function swapPairs($head) {
+        
+        if($head == null || $head->next == null){
+            return $head;
+        }
+        //需要一个前驱
+        $list = new ListNode(0);
+        $list->next = $head;
+        
+        $list2 = $list;
+        while($list->next!=null && $list->next->next!=null){
+            $tempNode = $list->next->next;
+            $list->next->next = $tempNode->next;
+            $tempNode->next = $list->next;
+            $list->next = $tempNode;
+            
+            $list = $list->next->next;
+        }
+        
+        return $list2->next;
+    }
+}
+
+
+
