@@ -96,7 +96,63 @@ class Solution {
         $root->next = $newList->next;
         return $list1;
     }
-    
 }
 
+思路二：按照栈的思想来写
+
+代码：
+/**
+ * Definition for a singly-linked list.
+ * class ListNode {
+ *     public $val = 0;
+ *     public $next = null;
+ *     function __construct($val) { $this->val = $val; }
+ * }
+ */
+class Solution {
+
+    /**
+     * @param ListNode $head
+     * @param Integer $k
+     * @return ListNode
+     */
+    function reverseKGroup($head, $k) {
+        //栈的思路
+        $newList = new ListNode(0);
+        $p = $newList;
+        
+        $stack = [];
+        
+        while(true){
+            $count = 0;
+            $tmp = $head;
+            
+            while($tmp!=null && $count<$k){
+                array_push($stack,$tmp);
+                $tmp = $tmp->next;
+                $count++;
+            }
+            
+            if($count != $k ){
+                //head指针不会动，代码下面所有未排序的
+                //tmp指针会根据循环条件，往栈里放，tmp指针往前移，此时的tmp为空
+                $p->next = $head;
+                break;
+            }
+            
+            while(count($stack)>0){
+                $p->next = array_pop($stack);
+                $p = $p->next;
+            }
+            
+            //给下次循环初始化
+            $head = $tmp;
+            //将后面未排序的连接起来
+            $p->next = $tmp;
+            
+            
+        }
+        return $newList->next;
+    }
+}
 
