@@ -1,0 +1,102 @@
+原题链接：https://leetcode-cn.com/problems/reverse-nodes-in-k-group/
+
+题目描述:
+    给出一个链表，每 k 个节点一组进行翻转，并返回翻转后的链表。
+
+    k 是一个正整数，它的值小于或等于链表的长度。如果节点总数不是 k 的整数倍，那么将最后剩余节点保持原有顺序。
+
+    示例 :
+
+    给定这个链表：1->2->3->4->5
+
+    当 k = 2 时，应当返回: 2->1->4->3->5
+
+    当 k = 3 时，应当返回: 3->2->1->4->5
+
+    说明 :
+
+    你的算法只能使用常数的额外空间。
+    你不能只是单纯的改变节点内部的值，而是需要实际的进行节点交换。
+
+思路：
+    想着切割成一段一段的进行翻转，虽然也实现了  但是感觉实现的好恶心。
+    下面先是我自己的代码，一会再看看各位大神的代码。再实现一次。
+    
+
+代码：
+/**
+ * Definition for a singly-linked list.
+ * class ListNode {
+ *     public $val = 0;
+ *     public $next = null;
+ *     function __construct($val) { $this->val = $val; }
+ * }
+ */
+class Solution {
+
+    /**
+     * @param ListNode $head
+     * @param Integer $k
+     * @return ListNode
+     */
+    function reverseKGroup($head, $k) {
+        
+        /*
+        思路： 总体思想就是，切分成多个小链表进行，对每一段进行全翻转。
+        具体：将每一段小链表当成一个节点，只需要找到它的前驱和后驱。
+               然后写一个统一方法进行链表进行翻转。
+        */
+        
+        $list = new ListNode(0);
+        $list->next = $head;
+        $list1 = $list;
+        
+        //初始化，第一端链表的前驱
+        $n = 0;
+        $root = $list;
+        
+        while($list->next!=null){
+            $list = $list->next;
+            $n++;
+            if($n == $k){
+                //得到链表的后驱
+                $son = $list->next;
+                
+                //初始化下一段链表
+                $n=0;
+                $root = self::reverse($root,$k);
+                //此时的root->next为null,需要将下面的son连接进来
+                //再赋值给list，继续循环。
+                $root->next = $son;
+                $list = $root;
+            }
+            
+        }
+        
+        return $list1->next;
+    }
+    
+    /*
+    翻转链表，返回后驱
+    */
+    public function reverse($root,$k){
+        $newList = new ListNode(0);
+        
+        //第一个将变为最后一个，记录下来，最后需要返回
+        $list = $root->next;
+        $list1 = $list;
+        while($k>0){
+            $temp = $list->next;
+            $list->next = $newList->next;
+            $newList->next = $list;
+            
+            $list=$temp;
+            $k--;
+        }
+        $root->next = $newList->next;
+        return $list1;
+    }
+    
+}
+
+
