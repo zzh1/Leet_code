@@ -1,0 +1,111 @@
+原题链接：https://leetcode-cn.com/problems/divide-two-integers/
+题目描述：
+    给定两个整数，被除数 dividend 和除数 divisor。将两数相除，要求不使用乘法、除法和 mod 运算符。
+
+    返回被除数 dividend 除以除数 divisor 得到的商。
+
+    示例 1:
+
+    输入: dividend = 10, divisor = 3
+    输出: 3
+    示例 2:
+
+    输入: dividend = 7, divisor = -3
+    输出: -2
+    说明:
+
+    被除数和除数均为 32 位有符号整数。
+    除数不为 0。
+    假设我们的环境只能存储 32 位有符号整数，其数值范围是 [−231,  231 − 1]。本题中，如果除法结果溢出，则返回 231 − 1。
+
+    来源：力扣（LeetCode）
+    链接：https://leetcode-cn.com/problems/divide-two-integers
+    著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+ 
+ 思路：
+    明显想到，可以用减法。被除数不断减除数，结果加1,直到不够减，很快提交了代码。时间效率很低。不出意料但是当被除数很大，除数很小的时候。超时。
+    
+    最终还是去看了下题解。每减一次除数，将除数扩大一倍。下次直接减2倍的除数。结果呢 也相应增加2。
+    
+    被除数 除数
+
+    15 3
+
+    12 6
+
+    6 12
+
+    发现除数 大于 被除数大，再重现开始
+
+    6 3
+
+    ...
+
+    3 3
+
+    虽然这个例子遍历次数相等，对于较大的数，可以减少时间复杂度
+    
+    在原先代码上做了些改动。通过了。
+    
+    PS:  不过我感觉我的溢出多少有点问题，不灵活，有优化空间
+
+代码：
+class Solution {
+
+    /**
+     * @param Integer $dividend
+     * @param Integer $divisor
+     * @return Integer
+     */
+    function divide($dividend, $divisor) {
+        
+        //确定正负号
+        if(($dividend > 0 && $divisor > 0) || ($dividend < 0 && $divisor < 0)){
+            $symbol = true;
+        }else{
+            $symbol = false;
+        }
+        
+        $dividend = abs($dividend);
+        $divisor = abs($divisor);
+        
+        $new_divisor = $divisor;
+        
+        $result = 0;  //目前的结果
+        $new_add = 1; //每次增加的值
+        
+        $max_PHP = pow(2,31) - 1 ;
+        $min_PHP = pow(-2,31);
+        
+        while ($dividend >= $divisor){
+            if($dividend < $new_divisor){
+                $new_divisor = $divisor;
+                $new_add = 1;
+            }    
+            $dividend -= $new_divisor;
+            
+            
+            if(($symbol && ($result > $max_PHP - $new_add)) || (!$symbol && ($result > $max_PHP - $new_add + 1)) ){
+                return $max_PHP;
+            }
+            
+            $result += $new_add;
+            
+            //下次循环的初始化
+            $new_divisor += $new_divisor;
+            $new_add = $new_add + $new_add;
+        }
+        
+        if(!$symbol){
+            $result = 0-$result;
+        }
+        return $result;
+    }
+}
+
+
+
+
+
+
+
