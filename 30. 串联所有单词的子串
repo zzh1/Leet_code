@@ -90,5 +90,62 @@
     }
 
 
+思路二(不使用递归，使用hashmap的思想，最长的那个时间耗时正常了，但是提交后包  输出超出限制，毫无输出，怀疑是leetcode的bug)
+代码：
+class Solution {
+
+    /**
+     * @param String $s
+     * @param String[] $words
+     * @return Integer[]
+     */
+    function findSubstring($s, $words) {
+        
+        $n = count($words);
+        if($n == 0){
+            return [];
+        }
+        $len_one = strlen($words[0]);
+        
+        $lens = $n * $len_one;
+        
+        if(strlen($s) < $lens){
+            return [];
+        }
+        
+        foreach($words as $item){
+            $arr_map[$item]++;
+        }
+        
+        $result = [];
+        for($i=0;$i<=strlen($s)-$lens;$i++){
+            $sub_str = substr($s,$i,$lens);
+            
+            if(self::isAllWordsInStr($sub_str,$arr_map,$len_one)){
+                $result[] = $i;
+            }
+        }
+        return $result;
+    }
+    
+    
+    function isAllWordsInStr($str,$arr_map,$len_one){
+        
+        for($i=0;$i<strlen($str);$i+=$len_one){
+            $sub_str = substr($str,$i,$len_one);
+            if(!array_key_exists($sub_str,$arr_map)){
+                return false;
+            }
+            
+            $new_map[$sub_str]++;
+            if($new_map[$sub_str] > $arr_map[$sub_str]){
+                return false;
+            } 
+        }
+        return true;
+    }
+    
+}
+
 
 
