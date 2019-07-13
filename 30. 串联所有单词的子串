@@ -1,0 +1,94 @@
+原题链接: https://leetcode-cn.com/problems/substring-with-concatenation-of-all-words/
+
+题目描述：
+    给定一个字符串 s 和一些长度相同的单词 words。找出 s 中恰好可以由 words 中所有单词串联形成的子串的起始位置。
+
+    注意子串要与 words 中的单词完全匹配，中间不能有其他字符，但不需要考虑 words 中单词串联的顺序。
+
+    示例 1：
+
+    输入：
+      s = "barfoothefoobarman",
+      words = ["foo","bar"]
+    输出：[0,9]
+    解释：
+    从索引 0 和 9 开始的子串分别是 "barfoor" 和 "foobar" 。
+    输出的顺序不重要, [9,0] 也是有效答案。
+    示例 2：
+
+    输入：
+      s = "wordgoodgoodgoodbestword",
+      words = ["word","good","best","word"]
+    输出：[]
+
+    来源：力扣（LeetCode）
+    链接：https://leetcode-cn.com/problems/substring-with-concatenation-of-all-words
+    著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+    
+思路：
+    比较常规的暴力法，因为words里面长度都相同，从字符串中每次截取和words总长度相同的子串，来和words进行比较。满足条件则返回下标。
+    但是耗时太久。  需要看看题解，进行优化
+    
+代码(暴力法)：
+    class Solution {
+
+        /**
+         * @param String $s
+         * @param String[] $words
+         * @return Integer[]
+         */
+        function findSubstring($s, $words) {
+
+            $n = count($words);
+            if($n == 0){
+                return [];
+            }
+            $len_one = strlen($words[0]);
+
+            $lens = $n * $len_one;
+
+            if(strlen($s) < $lens){
+                return [];
+            }
+
+            $result = [];
+            for($i=0;$i<=strlen($s)-$lens;$i++){
+                $sub_str = substr($s,$i,$lens);
+                if(self::isAllWordsInStr($sub_str,$words,$len_one)){
+                    $result[] = $i;
+                }
+            }
+            return $result;
+        }
+
+        function isAllWordsInStr($str,$words,$len_one){
+            if(count($words) == 0){
+                return true;
+            }
+
+            $sub_str = substr($str,0,$len_one);
+            if(!in_array($sub_str,$words)){
+                return false;
+            } 
+
+            for($i = 0;$i<count($words);$i++){
+                if($words[$i] == $sub_str){
+                    //删除数组中某个元素的方法一
+                    /*unset($words[$i]);
+                    $words = array_values($words);*/
+                    //删除数组中某个元素的方法二
+                    array_splice($words, $i, 1);
+                    //出新重复的，一次只能删除一个
+                    break;
+                }
+            }
+            //递归
+            $str2 = substr($str,$len_one);
+            return self::isAllWordsInStr($str2,$words,$len_one);
+
+        }
+    }
+
+
+
+
