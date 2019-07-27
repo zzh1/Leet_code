@@ -1,0 +1,74 @@
+原题链接：https://leetcode-cn.com/problems/next-permutation/
+题目描述：
+    实现获取下一个排列的函数，算法需要将给定数字序列重新排列成字典序中下一个更大的排列。
+
+    如果不存在下一个更大的排列，则将数字重新排列成最小的排列（即升序排列）。
+
+    必须原地修改，只允许使用额外常数空间。
+
+    以下是一些例子，输入位于左侧列，其相应输出位于右侧列。
+    1,2,3 → 1,3,2
+    3,2,1 → 1,2,3
+    1,1,5 → 1,5,1
+
+思路：
+    刚开始看例子  123 -> 132,想到了从右往左循环，找到第一个nums[$i-1]<nums[$i]的情况。但是思路没有全面覆盖。如 132->231。自己的思路规律无法统一。
+    
+    看了题解和评论。意识到自己没有考虑完整。
+    
+    1，确实需要找到这个点，这个i，因为要找下一个更大的排列，所以必须要找到这个点。
+    2,找到[i,len-1]中比  num[i-1]大且最接近的那个key值t。因为后面是按照降序的，所以从后往前找找到第一个比他大的即可。然后交换nums[i-1]和nums[t]。
+    3，将[i,len-1] 进行升序排序。因为本来是升序的，所以 首尾不断交换即可。
+
+代码：
+    class Solution {
+
+        /**
+         * @param Integer[] $nums
+         * @return NULL
+         */
+        function nextPermutation(&$nums) {
+            $len = count($nums);
+            for($i = $len-1; $i > 0;$i--){
+                if($nums[$i] > $nums[$i-1]){
+                    self::nextBig($nums,$i);
+                    self::Asc2Desc($nums,$i);
+                    return;
+                }
+            }
+            self::Asc2Desc($nums,0);
+        }
+
+        // 找到t后面最接近的大于$nums[$i-1]的数，且交换位置
+        function nextBig(&$nums,$t){
+            $nextBig = count($nums)-1;
+            for($i = $nextBig; $i>$t;$i--){
+                if($nums[$t-1] < $nums[$i]) break;
+            }
+
+            $temp = $nums[$t-1];
+            $nums[$t-1] = $nums[$i];
+            $nums[$i] = $temp;
+        }
+
+        //将降序变为升序
+        function Asc2Desc(&$nums,$t){
+            $len = count($nums);
+            $N = (int)(($len-$t)/2);
+            for($n=0,$i = $t;$n<$N; $i++,$n++){
+                $temp = $nums[$i];
+                $nums[$i] = $nums[$len-1-$n];
+                $nums[$len-1-$n] = $temp;
+            }
+        }
+    }
+
+
+
+
+
+
+
+
+
+
