@@ -1,0 +1,84 @@
+原题链接：https://leetcode-cn.com/problems/longest-valid-parentheses/
+
+题目描述：
+    给定一个只包含 '(' 和 ')' 的字符串，找出最长的包含有效括号的子串的长度。
+
+    示例 1:
+
+    输入: "(()"
+    输出: 2
+    解释: 最长有效括号子串为 "()"
+    示例 2:
+
+    输入: ")()())"
+    输出: 4
+    解释: 最长有效括号子串为 "()()"
+
+思路： 跟判断括号是否有效思路大致相同，只不过这次栈里存的是(index:Int, char:Character),遍历结束后，栈里剩下的就是断开的位置的下表，
+      求出各相邻元素index差值的最大值即可。
+
+代码：
+    class Solution {
+        /**
+         * @param String $s
+         * @return Integer
+         */
+        function longestValidParentheses($s) {
+            //把stack只能当栈使用，不能使用其他方法
+            $stack = [];
+
+            $len = strlen($s);
+
+            for($i=0;$i<$len;$i++){
+                $item = $s[$i];
+                $stack_item = ["num"=>$i,"val"=>$item];
+
+                if($item == '('){
+                    array_push($stack,$stack_item);
+                }else{
+                    if(count($stack)!=0){
+                        $stack_pop = array_pop($stack);
+                        if($stack_pop["val"] !='('){
+                            array_push($stack,$stack_pop);
+                            array_push($stack,$stack_item);
+                        }
+                    }else{
+                        //如果第一个就是")"
+                        array_push($stack,$stack_item);
+                    }
+                }
+            }
+
+            if(count($stack) == 0) return $len;
+
+            $new_stack = [];
+
+            while(!empty($stack)){
+                $stack_item = array_pop($stack);
+                if(!isset($max_part_len)){
+                    $max_part_len = $len - ($stack_item["num"]+1);
+                }else{
+                    $this_part_len = $pre - ($stack_item["num"]+1);
+                    if($this_part_len>$max_part_len){
+                        $max_part_len = $this_part_len;
+                    }
+                }
+                //下次循环的初始化
+                $pre = $stack_item["num"];
+
+                //最后一个需要再比较一次
+                if(empty($stack)){
+                    //最靠前的一节,num即长度  num-0
+                    $this_part_len = $stack_item["num"];
+                    if($this_part_len > $max_part_len){
+                        $max_part_len = $this_part_len;
+                    }
+                }
+            }
+            return $max_part_len;
+        }
+    }
+
+
+
+
