@@ -1,0 +1,152 @@
+原题链接：https://leetcode-cn.com/problems/valid-sudoku/
+题目描述
+
+    判断一个 9x9 的数独是否有效。只需要根据以下规则，验证已经填入的数字是否有效即可。
+
+    数字 1-9 在每一行只能出现一次。
+    数字 1-9 在每一列只能出现一次。
+    数字 1-9 在每一个以粗实线分隔的 3x3 宫内只能出现一次。
+
+
+    上图是一个部分填充的有效的数独。
+
+    数独部分空格内已填入了数字，空白格用 '.' 表示。
+
+    示例 1:
+
+    输入:
+    [
+      ["5","3",".",".","7",".",".",".","."],
+      ["6",".",".","1","9","5",".",".","."],
+      [".","9","8",".",".",".",".","6","."],
+      ["8",".",".",".","6",".",".",".","3"],
+      ["4",".",".","8",".","3",".",".","1"],
+      ["7",".",".",".","2",".",".",".","6"],
+      [".","6",".",".",".",".","2","8","."],
+      [".",".",".","4","1","9",".",".","5"],
+      [".",".",".",".","8",".",".","7","9"]
+    ]
+    输出: true
+    示例 2:
+
+    输入:
+    [
+      ["8","3",".",".","7",".",".",".","."],
+      ["6",".",".","1","9","5",".",".","."],
+      [".","9","8",".",".",".",".","6","."],
+      ["8",".",".",".","6",".",".",".","3"],
+      ["4",".",".","8",".","3",".",".","1"],
+      ["7",".",".",".","2",".",".",".","6"],
+      [".","6",".",".",".",".","2","8","."],
+      [".",".",".","4","1","9",".",".","5"],
+      [".",".",".",".","8",".",".","7","9"]
+    ]
+    输出: false
+    解释: 除了第一行的第一个数字从 5 改为 8 以外，空格内其他数字均与 示例1 相同。
+         但由于位于左上角的 3x3 宫内有两个 8 存在, 因此这个数独是无效的。
+    说明:
+
+    一个有效的数独（部分已被填充）不一定是可解的。
+    只需要根据以上规则，验证已经填入的数字是否有效即可。
+    给定数独序列只包含数字 1-9 和字符 '.' 。
+    给定数独永远是 9x9 形式的。
+
+解题思路：
+    本题思路比较容易想到，难度相对来说也不大。就是根据三个判断，依次判断是否符合即可。
+    只不过判断过程中，在判断的起始位置上做一些优化，可以适当提升些效率。
+
+代码；
+    class Solution {
+        /**
+         * @param String[][] $board
+         * @return Boolean
+         */
+        function isValidSudoku($board) {
+            $i=0;
+            $j=0;
+            while($i<9 && $j < 9){
+                $temp = $board[$i][$j];
+                if($temp != '.'){
+                    $validinRow = self::isValidInRow($board,$i,$j);
+                    $validinColumn = self::isValidInColumn($board,$i,$j);
+                    $validinMatrix = self::isValidInMatrix($board,$i,$j);
+                    if(!$validinRow || !$validinColumn || !$validinMatrix){
+                        return false;
+                    }
+                }
+
+                if($j+1<9){
+                    $j++;
+                }else{
+                    $i++;
+                    $j = 0;
+                }
+            }
+            return true;
+
+        }
+
+        function isValidInRow($board,$row,$column){
+            for($j = $column; $j < 9; $j++){
+                if($j == $column) continue;
+
+                if($board[$row][$j] == $board[$row][$column]){
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        function isValidInColumn($board,$row,$column){
+            for($i = $row; $i < 9; $i++){
+                if($i == $row) {
+                    //$i ++;
+                    continue;
+                }
+
+                if($board[$i][$column] == $board[$row][$column]){
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        function isValidInMatrix($board,$row,$column){
+            $row_start = floor($row/3) * 3;
+            $column_start = floor($column/3) * 3;
+
+            $row_end = $row_start + 3;
+            $column_end = $column_start + 3;
+
+            $i = $row_start;
+            $j = $column_start;
+
+            while($i<$row_end && $j<$column_end){
+                if($i == $row && $j == $column) {
+                    if($j+1 < $column_end){
+                        $j ++;
+                    }else{
+                        $i++;
+                        $j = $column_start;
+                    }
+                    continue;
+                }
+
+                if($board[$i][$j] == $board[$row][$column]){
+                    return false;
+                }
+
+                if($j+1 < $column_end){
+                   $j ++;
+                }else{
+                    $i++;
+                    $j = $column_start;
+                }
+            }
+            return true;
+        }
+    }
+
+
+
+
