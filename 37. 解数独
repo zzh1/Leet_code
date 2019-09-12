@@ -1,0 +1,109 @@
+原题链接：https://leetcode-cn.com/problems/sudoku-solver/
+
+题目描述：
+    编写一个程序，通过已填充的空格来解决数独问题。
+
+    一个数独的解法需遵循如下规则：
+
+    数字 1-9 在每一行只能出现一次。
+    数字 1-9 在每一列只能出现一次。
+    数字 1-9 在每一个以粗实线分隔的 3x3 宫内只能出现一次。
+    空白格用 '.' 表示。
+
+
+
+    一个数独。
+
+
+
+    答案被标成红色。
+
+    Note:
+
+    给定的数独序列只包含数字 1-9 和字符 '.' 。
+    你可以假设给定的数独只有唯一解。
+    给定数独永远是 9x9 形式的。
+    在真实的面试中遇到过这道题？
+
+思路：
+        暴力法，时间耗时太久，无意义。想到了用三层数组来表示是否已经被选上。但是感觉思路上，有点不同，自己想着是以每个坑作为数组的key，
+    本坑内填的数据未value。但具体实现的时候感觉判断方式仍然比较笨重。
+        看了评论后。三个数组(两个二阶，一个三阶) 0-9数组的key，true或false作为value。这样方便了判断。
+        
+        虽然已经实现，但是一直报时间超出限制。但是我从 第三行（3，0）及以下开启。均可以正常显示。不解。待日后在想明白。
+
+具体代码：
+    class Solution {
+
+        /**
+         * @param String[][] $board
+         * @return NULL
+         */
+        function solveSudoku(&$board) {
+            $rowUsed = [9][10];
+            $colUsed = [9][10];
+            $boxUsed = [3][3][10];
+
+            //初始化
+            for($i = 0;$i < count($board); $i++){
+                for($j = 0; $j < count($board[0]); $j++){
+                    $temp = $board[$i][$j];
+                    $box_row = floor($i/3);
+                    $box_col = floor($j/3);
+                    if( $temp != '.'){
+                        $rowUsed[$i][$temp] = true;
+                        $colUsed[$j][$temp] = true;
+                        $boxUsed[$box_row][$box_col][$temp] = true;
+                    }
+                }
+            }
+            self::recusiveSolveSudoku($board,$rowUsed,$colUsed,$boxUsed,8,5);
+        }
+
+        function recusiveSolveSudoku(&$board,&$rowUsed,&$colUsed,&$boxUsed,$row,$col){
+            if($col == count($board[0]) ){
+                $col = 0;
+                $row ++;
+
+                if($row == count($board)){
+                    var_dump("over");
+                    return true;
+                }
+            }
+
+            if($board[$row][$col] == '.'){
+
+                //尝试填充1-9
+                for($i = 1;$i<=9;$i++){
+                    var_dump($i);
+                    $box_row = floor($row/3);
+                    $col_row = floor($col/3);
+                    $canUsed = !($rowUsed[$row][$i] || $colUsed[$col][$i] || $boxUsed[$box_row][$box_col][$i]);
+
+                    if($canUsed){
+                        $rowUsed[$row][$i] = true;
+                        $colUsed[$col][$i] = true;
+                        $boxUsed[$box_row][$box_col] = true;
+
+                        $board[$row][$col] = "$i";
+                        if(self::recusiveSolveSudoku($board,$rowUsed,$colUsed,$boxUsed,$row,$col+1)){
+                            var_dump("----------------------------------------------");
+                            return true;
+                        }
+                        //还原成false， 回溯
+                        $rowUsed[$row][$i] = false;
+                        $colUsed[$col][$i] = false;
+                        $boxUsed[$box_row][$box_col] = false;
+                        $board[$row][$col] = '.';
+                    }
+                }
+
+            }else{
+                return self::recusiveSolveSudoku($board,$rowUsed,$colUsed,$boxUsed,$row,$col+1);
+            }
+            return  false;
+        }
+
+    }
+
+
