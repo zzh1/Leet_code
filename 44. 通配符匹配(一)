@@ -1,0 +1,129 @@
+题目描述：
+    给定一个字符串 (s) 和一个字符模式 (p) ，实现一个支持 '?' 和 '*' 的通配符匹配。
+
+    '?' 可以匹配任何单个字符。
+    '*' 可以匹配任意字符串（包括空字符串）。
+    两个字符串完全匹配才算匹配成功。
+
+    说明:
+
+    s 可能为空，且只包含从 a-z 的小写字母。
+    p 可能为空，且只包含从 a-z 的小写字母，以及字符 ? 和 *。
+    示例 1:
+
+    输入:
+    s = "aa"
+    p = "a"
+    输出: false
+    解释: "a" 无法匹配 "aa" 整个字符串。
+    示例 2:
+
+    输入:
+    s = "aa"
+    p = "*"
+    输出: true
+    解释: '*' 可以匹配任意字符串。
+    示例 3:
+
+    输入:
+    s = "cb"
+    p = "?a"
+    输出: false
+    解释: '?' 可以匹配 'c', 但第二个 'a' 无法匹配 'b'。
+    示例 4:
+
+    输入:
+    s = "adceb"
+    p = "*a*b"
+    输出: true
+    解释: 第一个 '*' 可以匹配空字符串, 第二个 '*' 可以匹配字符串 "dce".
+    示例 5:
+
+    输入:
+    s = "acdcb"
+    p = "a*c?b"
+    输入: false
+
+    来源：力扣（LeetCode）
+    链接：https://leetcode-cn.com/problems/wildcard-matching
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+
+
+思路：
+    本题一看，就知道，写过，然后呢，可能是最近被leetcode这几道题虐多了，不怎么想写，拖拖拉拉了好久，终于写了。结果还可以，通过几次提交，把漏洞都补上了。
+    但是，最后时间超出限制 那关，还是没过。 我记得之前写过类似的，也看了那个大神的动态规划的解法，现在还是想记录下自己写的。
+
+代码：
+class Solution {
+
+    /**
+     * @param String $s
+     * @param String $p
+     * @return Boolean
+     */
+    function isMatch($s, $p) {
+        
+        $len_s = strlen($s);
+        $len_p = strlen($p);
+        
+        $i = 0;
+        $j = 0;
+        
+        while($i<$len_s && $j<$len_p){
+            $temp_s = $s[$i];
+            $temp_p = $p[$j];
+            
+            if($temp_p == '*'){
+                //处理连续的*  连续的*当成一个来处理，要不然太耗时
+                while($p[$j+1]=='*'){
+                    $j++;
+                }
+                if($j+1 >= $len_p){
+                    //即 最后一个正则字符是*
+                    return true;
+                }
+                $sub_p = substr($p,$j+1);
+                
+                for($k = $i;$k<$len_s;$k++){
+                    $sub_s = substr($s,$k);
+                    if(self::isMatch($sub_s,$sub_p)){
+                        return true;
+                    }
+                }
+                return false;
+            }elseif($temp_p == '?'){
+                $i++;
+                $j++;
+            }else{
+                if($temp_s == $temp_p){
+                    $i++;
+                    $j++;
+                }else{
+                    return false;
+                }  
+            }
+        }
+        
+        if($i == $len_s && $j!= $len_p){
+            //p剩余的必须全是*才是true
+            while($j<$len_p){
+                if($p[$j] != '*')  return false;
+                $j++;
+            }
+            return true;
+        }elseif($i != $len_s && $j==$len_p){
+            return false;
+        }else{
+            return true;
+        }
+    }
+}
+    
+
+
+
+
+
+
+
+
